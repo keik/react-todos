@@ -1,7 +1,7 @@
-var React    = require('react'),
+let React    = require('react'),
     ReactDOM = require('react-dom')
 
-var App = require('./app')
+let App = require('./app.jsx')
 
 ReactDOM.render(
   <App/>,
