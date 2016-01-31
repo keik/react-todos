@@ -25,3 +25,6 @@ lint: node_modules
 
 $(DIST):
 	@mkdir -p $@
+
+node_modules: package.json
+	@npm i
