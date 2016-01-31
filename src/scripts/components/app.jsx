@@ -4,24 +4,12 @@ let React    = require('react'),
     ReactDOM = require('react-dom')
 
 let TodoFormNode = require('./todo-form.jsx')
-let TodosNode = require('./todos.jsx'),
-    TodosStore = require('./stores/todos-store')
+let TodosNode = require('./todos.jsx')
 
 let App = React.createClass({
 
-  getInitialState: function() {
-    d('#getInitialState')
-    return {todos: TodosStore.getAll()}
-  },
-
   componentDidMount: function() {
     d('#componentDidMount')
-    TodosStore.addChangeListener(this._onChange)
-  },
-
-  componentWillUnmount: function() {
-    d('#componentWillUnmount')
-    TodosStore.removeChangeListener(this._onChange)
   },
 
   handleKeyDown: function(e) {
@@ -40,17 +28,13 @@ let App = React.createClass({
           <h1>TODOS</h1>
         </section>
         <section className="row buffer-bottom">
-          <TodoFormNode todos={this.state.todos}/>
+          <TodoFormNode url="http://localhost:3000/api/todos"/>
         </section>
         <section>
-          <TodosNode todos={this.state.todos}/>
+          <TodosNode url="http://localhost:3000/api/todos"/>
         </section>
       </div>
     )
-  },
-
-  _onChange: function() {
-    this.setState({todos: TodosStore.getAll()})
   }
 })
 
