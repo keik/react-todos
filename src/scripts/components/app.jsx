@@ -1,22 +1,31 @@
-let d = require('debug')('app')
+let d = require('debug')('[component] app')
 
 let React    = require('react'),
     ReactDOM = require('react-dom')
 
-let TodoFormNode = require('./todo-form.jsx')
-let TodosNode = require('./todos.jsx')
+let TodoFormNode        = require('./todo-form.jsx'),
+    TodosNode           = require('./todos.jsx'),
+    TodosControllerNode = require('./todos-controller.jsx'),
+    TodoActions         = require('../actions/todo-actions'),
+    TodosStore          = require('../stores/todos-store'),
+    constants           = require('../constants/constants')
 
-let App = React.createClass({
+let AppNode = React.createClass({
+
+  getInitialState: function() {
+    d('#getInitialState')
+    return {todos: TodosStore.getAll()}
+  },
 
   componentDidMount: function() {
     d('#componentDidMount')
+    TodoActions.fetch()
+    TodosStore.on(TodosStore.CHANGE, this.onChangeTodosStore)
   },
 
-  handleKeyDown: function(e) {
-    d('#handleKeyDown')
-  },
-  handleChange: function(e) {
-    d('#handleChange')
+  componentWillUnmount: function() {
+    d('#componentWillUnmount')
+    TodosStore.removeListener(TodosStore.CHANGE, this.onChangeTodosStore)
   },
 
   render: function() {
@@ -28,14 +37,22 @@ let App = React.createClass({
           <h1>TODOS</h1>
         </section>
         <section className="row buffer-bottom">
-          <TodoFormNode url="http://localhost:3000/api/todos"/>
+          <TodoFormNode todos={this.state.todos}/>
         </section>
         <section>
-          <TodosNode url="http://localhost:3000/api/todos"/>
+          <TodosNode todos={this.state.todos}/>
+        </section>
+        <section>
+          <TodosControllerNode todos={this.state.todos}/>
         </section>
       </div>
     )
+  },
+
+  onChangeTodosStore: function() {
+    d('#onChangeTodosStore')
+    this.setState({todos: TodosStore.getAll()})
   }
 })
 
-module.exports = App
+module.exports = AppNode

@@ -1,16 +1,20 @@
+let d = require('debug')('[dispatcher] dispatcher')
+
 let Dispatcher = function() {}
 
 let _callbacks = []
 var _promises = []
 
-Dispatcher.prototype = Object.assign({}, Dispatcher.prototype, {
+Dispatcher = Object.assign(Dispatcher, {
 
   register: function(callback) {
+    d('#register')
     _callbacks.push(callback)
     return _callbacks.length - 1
   },
 
   dispatch: function(payload) {
+    d('#dispatch')
     let resolves = [],
         rejects = []
     _promises = _callbacks.map((_, i) => {

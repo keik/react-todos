@@ -1,31 +1,24 @@
-let d = require('debug')('todos')
+let d = require('debug')('[component] todos')
 
 let React    = require('react'),
-    ReactDOM = require('react-dom'),
-    TodoNode = require('./todo.jsx')
+    ReactDOM = require('react-dom')
+
+let TodoNode = require('./todo.jsx')
 
 let TodosNode = React.createClass({
 
-  getInitialState: function() {
-    return {todos: []}
-  },
-  componentDidMount: function() {
-    d('#componentDidMount')
-    fetch(this.props.url)
-      .then(res => res.json())
-      .then(msg => {
-        // TODO update store and emit changes
-        this.setState({todos: msg})
-      }).catch(err => console.log(err))
+  propTypes: {
+    todos: React.PropTypes.object.isRequired
   },
 
   render: function() {
+    let todos = this.props.todos
+    if (Object.keys(todos).length < 1)
+      return null
 
-    let todoNodes = this.state.todos.map(function(todo) {
-      return (
-        <TodoNode key={todo.id} completed={todo.completed} title={todo.title} dueDate={todo.dueDate}/>
-      )
-    })
+    let todoNodes = Object.keys(todos).map((id) => (
+        <TodoNode key={id} complete={todos[id].complete} title={todos[id].title} dueDate={todos[id].dueDate}/>
+    ))
 
     return (
       <table className="table">

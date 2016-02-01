@@ -25,3 +25,5 @@ lint: node_modules
 
 $(DIST):
 	@mkdir -p $@
+
+.PHONY: build watch run-mock-api-server run-dev-server watch-less css lint

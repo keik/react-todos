@@ -1,59 +1,73 @@
+let d = require('debug')('[store] todos-store')
+
 let EventEmitter = require('events').EventEmitter,
-    Dispatcher = require('../dispatcher/app-dispatcher'),
+    Dispatcher = require('../dispatcher/dispatcher'),
     constants = require('../constants/constants')
 
 let _todos = {}
 
-let CHANGE_EVENT = 'change'
+let TodosStore = Object.assign({}, EventEmitter.prototype, {
 
-function create(title) {
-  let id = Date.now()
-  _todos[id] = {
-    id: id,
-    complete: false,
-    title: title
+  CHANGE: 'change',
+
+  getAll: function(remoteFetch) {
+    d('#getAll')
+    return _todos
+  },
+
+  fetch: function() {
+    d('#_fetch')
   }
+})
+
+Dispatcher.register((action) => {
+  switch(action.actionType) {
+  case constants.TODO_CREATE:
+    let title = action.title.trim()
+    if (title)
+      _create(title)
+    break
+  case constants.TODO_DESTROY:
+    // TODO
+    break
+
+  case constants.TODOS_FETCH:
+    _fetch()
+  default:
+  }
+})
+
+function _create(title) {
+  d('#_create')
+  fetch(constants.ENDPOINT_TODOS, {
+    method: 'POST',
+    body: JSON.stringify({title: title, complete: false, dueDate: null}),
+    headers: {'Content-Type': 'application/json'}
+  }).then(res => {
+    if (!res.ok) throw new Error('WHAT')
+    return res.json()
+  }).then(todo => {
+    _todos[todo.id] = todo
+    TodosStore.emit(TodosStore.CHANGE)
+  }).catch(err => console.log(err))
+}
+
+function _fetch() {
+  fetch(constants.ENDPOINT_TODOS, {
+    method: 'GET'
+  }).then((res) => {
+    if (!res.ok) throw new Error('WHAT')
+    return res.json()
+  }).then(todos => {
+    todos.forEach(todo => _todos[todo.id] = todo)
+    TodosStore.emit(TodosStore.CHANGE)
+  }).catch(err => console.log(err))
 }
 
 function destroy(id) {
+  d('#destroy')
   delete _todos[id]
+  TodosStore.emit(TodosStore.CHANGE)
 }
-
-let TodosStore = Object.assign({}, EventEmitter.prototype, {
-
-  getAll: function() {
-    return _todos
-  },
-  emitChange: function() {
-    this.emit(CHANGE_EVENT)
-  },
-  addChangeListener: function(callback) {
-    this.on(CHANGE_EVENT, callback)
-  },
-  removeChangeListener: function(callback) {
-    this.removeListener(CHANGE_EVENT, callback)
-  },
-
-  dispatchIndex: Dispatcher.register(function(payload) {
-    let action = payload.action,
-        title
-    switch(action.actionType) {
-    case constants.TODO_CREATE:
-      title = action.title.trim()
-      if (title === '')
-        return false
-      create(title)
-      TodosStore.emitChange()
-      break
-    case constants.TODO_DESTROY:
-      destroy(action.id)
-      TodosStore.emitChange()
-      break
-    default:
-    }
-    return true
-  })
-
-})
 
 module.exports = TodosStore
