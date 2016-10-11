@@ -1,12 +1,6 @@
 {
-  "env": {
-    "es6": true
-  },
-  "ecmaFeatures": {
-    "arrowFunctions": true,
-    "jsx": true
-  },
+  "extends": "react-app",
   "rules": {
-    "semi": [2, "never"]
+    "semi": ["warn", "never"]
   }
 }
