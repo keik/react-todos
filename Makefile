@@ -10,7 +10,7 @@ build: node_modules clean lint test bundle copy
 	$(NPM)/browserify -t babelify $(MAIN_JS) -o $(BUNDLE_JS) -v
 
 watch:
-	$(MAKE) -j watch-js run-dev-server
+	$(MAKE) -j watch-js watch-test run-dev-server
 
 watch-js: node_modules bundle copy
 	@echo $(TAG)$@$(END)
@@ -24,9 +24,13 @@ run-mock-api-server: node_modules
 	@echo $(TAG)$@$(END)
 	$(NPM)/json-server --watch db.json --routes routes.json
 
+watch-test: node_modules
+	@echo $(TAG)$@$(END)
+	$(NPM)/ava -r babel-register tests --watch
+
 test: node_modules
 	@echo $(TAG)$@$(END)
-	@echo TODO
+	$(NPM)/ava -r babel-register tests
 
 lint: node_modules
 	@echo $(TAG)$@$(END)
