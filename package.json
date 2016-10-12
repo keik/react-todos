@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "make watch",
+    "test": "make test"
   },
   "author": "keik <k4t0.kei@gmail.com>",
   "license": "MIT",

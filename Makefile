@@ -10,7 +10,7 @@ build: node_modules clean lint test bundle copy
 	$(NPM)/browserify -t babelify $(MAIN_JS) -o $(BUNDLE_JS) -v
 
 watch:
-	$(MAKE) -j watch-js watch-test run-dev-server
+	$(MAKE) -j watch-js watch-test run-dev-server run-mock-api-server
 
 watch-js: node_modules bundle copy
 	@echo $(TAG)$@$(END)
