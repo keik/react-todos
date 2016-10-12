@@ -49,4 +49,4 @@ clean:
 	rm -rf bundle
 
 node_modules: package.json
-	@npm i
+	@yarn install || npm install
